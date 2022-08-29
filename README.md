@@ -31,6 +31,7 @@ Right now MDTab has only been tested on Chrome (brave browser). You can install 
 
 - Multi-note support (like Apple Notes)
 - Firefox/more browser support
+- More themes!!
 
 Any pull requests or bug reports are welcome!
 
