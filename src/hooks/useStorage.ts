@@ -24,16 +24,18 @@ export const useStorage = <T>(key: string, initialValue: T) => {
 
   useEffect(() => {
     const fetch = async () => {
-      if (chrome && chrome.storage) {
-        const storedValue = (await chrome.storage.sync.get(key))[key] || '';
-        if (!storedValue) return;
-        setValue(storedValue);
-        setInitialized(true);
-        return;
-      }
+      await (async () => {
+        if (chrome && chrome.storage) {
+          const storedValue = (await chrome.storage.sync.get(key))[key] || '';
+          if (!storedValue) return;
+          setValue(storedValue);
+        } else {
+          const storedValue = localStorage.getItem(key);
+          if (!storedValue) return;
+          setValue(storedValue ? JSON.parse(storedValue) : initialValue);
+        }
+      })();
 
-      const storedValue = localStorage.getItem(key);
-      setValue(storedValue ? JSON.parse(storedValue) : initialValue);
       setInitialized(true);
     };
 
