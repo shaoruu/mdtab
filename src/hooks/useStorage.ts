@@ -7,9 +7,10 @@ export const useStorage = <T>(key: string, initialValue: T) => {
   // const initialState = storedValue ? JSON.parse(storedValue) : initialValue;
 
   const [value, setValue] = useState<T>(initialValue);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    if (JSON.stringify(value) === JSON.stringify(initialValue)) {
+    if (!initialized) {
       return;
     }
 
@@ -27,11 +28,13 @@ export const useStorage = <T>(key: string, initialValue: T) => {
         const storedValue = (await chrome.storage.sync.get(key))[key] || '';
         if (!storedValue) return;
         setValue(storedValue);
+        setInitialized(true);
         return;
       }
 
       const storedValue = localStorage.getItem(key);
       setValue(storedValue ? JSON.parse(storedValue) : initialValue);
+      setInitialized(true);
     };
 
     fetch();
