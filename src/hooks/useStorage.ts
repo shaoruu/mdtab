@@ -9,8 +9,12 @@ export const useStorage = <T>(key: string, initialValue: T) => {
   const [value, setValue] = useState<T>(initialValue);
 
   useEffect(() => {
+    if (JSON.stringify(value) === JSON.stringify(initialValue)) {
+      return;
+    }
+
     if (chrome && chrome.storage) {
-      chrome.storage.sync.set({ [key]: JSON.stringify(value) });
+      chrome.storage.sync.set({ [key]: value });
       return;
     }
 
@@ -22,7 +26,7 @@ export const useStorage = <T>(key: string, initialValue: T) => {
       if (chrome && chrome.storage) {
         const storedValue = (await chrome.storage.sync.get(key))[key] || '';
         if (!storedValue) return;
-        setValue(JSON.parse(storedValue));
+        setValue(storedValue);
         return;
       }
 
