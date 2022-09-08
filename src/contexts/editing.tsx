@@ -25,6 +25,7 @@ export const EditingProvider = ({
 }) => {
   const [editing, setEditing] = useState(false);
   const [content, setContent] = useState('');
+  const [loaded, setLoaded] = useState(false);
   const [vimOn, setVimOn] = useStorage(VIM_KEY, false);
 
   useEffect(() => {
@@ -35,7 +36,6 @@ export const EditingProvider = ({
         setEditing(true);
       } else if (e.key === 's') {
         setEditing(false);
-        saveContent(content);
       } else {
         return;
       }
@@ -51,8 +51,15 @@ export const EditingProvider = ({
   }, [editing, content]);
 
   useEffect(() => {
+    if (!editing && loaded) {
+      saveContent(content);
+    }
+  }, [editing, loaded]);
+
+  useEffect(() => {
     const load = async () => {
       const prev = await retrieveContent();
+      setLoaded(true);
       setContent(prev || '');
     };
 
@@ -64,7 +71,7 @@ export const EditingProvider = ({
       value={{ editing, setEditing, content, setContent, vimOn, setVimOn }}
       {...others}
     >
-      {children}
+      {loaded && children}
     </EditingContext.Provider>
   );
 };
